@@ -17,19 +17,11 @@ public class HealthCheckController {
     public ResponseEntity<HealtCheckupStatusDto> healthCheck()
     {
         HealtCheckupStatusDto healtCheckupStatusDto = new HealtCheckupStatusDto();
-        try {
-            healtCheckupStatusDto.setResponse("System alive");
-            return new ResponseEntity<>(
+        healtCheckupStatusDto.setResponse("System alive");
+        return new ResponseEntity<>(
                     healtCheckupStatusDto,
                     HttpStatus.OK
-            );
-        }catch (Exception e)
-        {
-            healtCheckupStatusDto.setResponse("System not up");
-            return new ResponseEntity<>(
-                    healtCheckupStatusDto,
-                    HttpStatus.INTERNAL_SERVER_ERROR
-            );
-        }
+        );
+
     }
 }
