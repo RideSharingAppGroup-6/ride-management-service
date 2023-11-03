@@ -3,6 +3,7 @@ package com.example.ridemanagementservice.controllers;
 import com.example.ridemanagementservice.dtos.HealtCheckupStatusDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMapAdapter;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +23,8 @@ public class HealthCheckController {
                     healtCheckupStatusDto,
                     HttpStatus.OK
         );
+
+
 
     }
 }
