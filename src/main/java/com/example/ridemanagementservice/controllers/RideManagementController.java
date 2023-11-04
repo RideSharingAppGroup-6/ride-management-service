@@ -25,23 +25,32 @@ public class RideManagementController
     public CreateRideResponseDto createRide(@RequestBody CreateRideRequestDto createRideRequestDto,
                                             @PathVariable("userId") Long userId)
     {
-        return this.rideManagementService.createRide(createRideRequestDto,userId);
+        return this.rideManagementService.createRide(createRideRequestDto.getSourceLatitiude(),
+                createRideRequestDto.getSourceLongitude(), createRideRequestDto.getDestinationLatitude(),
+                createRideRequestDto.getDestinationLongitude(),
+                userId);
 
 
     }
 
     @GetMapping("{userId}")
-    public List<GetRideResponseDto> getRides(@PathVariable("userId") Long userId)
+    public List<GetRideResponseDto> getAllRides(@PathVariable("userId") Long userId)
     {
         return rideManagementService.getAllRides(userId);
     }
 
+    @GetMapping
+    public List<AllRideDetailsResponseDto> getAllRides(@RequestBody ListOfRideIdRequestDto listOfRideIdRequestDto)
+    {
+            return rideManagementService.getAllRides(listOfRideIdRequestDto.getRideId());
+    }
 
-    @PutMapping(value = {"{rideId}", "/cancel/{rideId}"})
+
+    @PutMapping("{rideId}" )
     public UpdateRideStatusResponseDto updateRideStatus(@RequestBody UpdateRideStatusRequestDto updateRideStatusRequestDto,
                                                         @PathVariable("rideId") Long rideId)
     {
-        return rideManagementService.updateRideStatus(updateRideStatusRequestDto,rideId);
+        return rideManagementService.updateRideStatus(updateRideStatusRequestDto.getRideStatus(),rideId);
     }
 
 

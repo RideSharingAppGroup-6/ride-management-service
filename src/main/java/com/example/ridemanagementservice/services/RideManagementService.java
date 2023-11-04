@@ -32,13 +32,17 @@ public class RideManagementService
         int amount = random.nextInt(100,500);
         return amount;
     }
-    public Ride createRideFromRequestDto(CreateRideRequestDto createRideDto,Long userId)
+    public Ride createRideObjectFromRequest(Double sourceLatitude,
+                                         Double sourceLongitude,
+                                         Double destinationLatitude,
+                                         Double destinationLongitude,
+                                         Long userId)
     {
         Ride ride = new Ride();
-        ride.setLatitiudeSource(createRideDto.getSourceLatitiude());
-        ride.setLongitudeSource(createRideDto.getSourceLongitude());
-        ride.setLatitudeDestination(createRideDto.getDestinationLatitude());
-        ride.setLongitudeDestination(createRideDto.getDestinationLongitude());
+        ride.setLatitiudeSource(sourceLatitude);
+        ride.setLongitudeSource(sourceLongitude);
+        ride.setLatitudeDestination(destinationLatitude);
+        ride.setLongitudeDestination(destinationLongitude);
         ride.setUserId(userId);
         ride.setRideStatus(RideStatus.ONGOING);
         ride.setAmount(generateAmount());
@@ -52,9 +56,14 @@ public class RideManagementService
         createRideResponseDto.setHttpStatus(HttpStatus.CREATED);
         return createRideResponseDto;
     }
-    public CreateRideResponseDto createRide(CreateRideRequestDto createRideDto,Long userId)
+    public CreateRideResponseDto createRide(Double sourceLatitude,
+                                            Double sourceLongitude,
+                                            Double destinationLatitude,
+                                            Double destinationLongitude,
+                                            Long userId)
     {
-        Ride ride = createRideFromRequestDto(createRideDto,userId);
+        Ride ride = createRideObjectFromRequest(sourceLatitude,sourceLongitude,destinationLatitude,
+                destinationLongitude,userId);
         Ride savedRide = rideRepo.save(ride);
         return convertRideToResponseObject(savedRide);
 
@@ -69,6 +78,7 @@ public class RideManagementService
          getRideResponseDto.setDestinationLatitude(ride.getLatitudeDestination());
          getRideResponseDto.setDestinationLongitude(ride.getLongitudeDestination());
          getRideResponseDto.setAmount(ride.getAmount());
+         getRideResponseDto.setRideStatus(ride.getRideStatus());
 
          return getRideResponseDto;
     }
@@ -85,6 +95,37 @@ public class RideManagementService
 
     }
 
+    private List<AllRideDetailsResponseDto> convertRideToResponse(List<Ride> rides)
+    {
+        List<AllRideDetailsResponseDto> allRides = new ArrayList<>();
+        for(Ride ride:rides)
+        {
+            AllRideDetailsResponseDto obj = new AllRideDetailsResponseDto();
+            obj.setLatitiudeSource(ride.getLatitiudeSource());
+            obj.setLongitudeSource(ride.getLongitudeSource());
+            obj.setLatitudeDestination(ride.getLatitudeDestination());
+            obj.setLongitudeDestination(ride.getLongitudeDestination());
+            obj.setUserId(ride.getUserId());
+            obj.setRideStatus(ride.getRideStatus());
+            obj.setAmount(ride.getAmount());
+            allRides.add(obj);
+        }
+        return allRides;
+    }
+    public List<AllRideDetailsResponseDto> getAllRides(List<Long> rideId)
+    {
+        List<Ride> rides = new ArrayList<>();
+        for(Long id:rideId)
+        {
+            Optional<Ride> optional = rideRepo.findById(id);
+            if( optional.isEmpty() )
+                throw new NotFoundException("Ride with "+id+" not present");
+            Ride ride = optional.get();
+            rides.add(ride);
+        }
+        return convertRideToResponse(rides);
+    }
+
     private UpdateRideStatusResponseDto convertUpdateRideStatusToResponseObject(Ride ride)
     {
         UpdateRideStatusResponseDto updateRideStatusResponseDto = new UpdateRideStatusResponseDto();
@@ -92,7 +133,7 @@ public class RideManagementService
         updateRideStatusResponseDto.setRideId(ride.getId());
         return updateRideStatusResponseDto;
     }
-    public UpdateRideStatusResponseDto updateRideStatus(UpdateRideStatusRequestDto updateRideStatusRequestDto,
+    public UpdateRideStatusResponseDto updateRideStatus(RideStatus rideStatus,
                                                         Long rideId)
     {
         Optional<Ride> optionalRide = rideRepo.findById(rideId);
@@ -102,7 +143,7 @@ public class RideManagementService
         }
 
         Ride ride = optionalRide.get();
-        ride.setRideStatus(updateRideStatusRequestDto.getRideStatus());
+        ride.setRideStatus(rideStatus);
 
         Ride updatedRide = rideRepo.save(ride);
 

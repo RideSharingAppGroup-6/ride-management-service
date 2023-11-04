@@ -1,6 +1,7 @@
 package com.example.ridemanagementservice.dtos;
 
 import com.example.ridemanagementservice.models.Ride;
+import com.example.ridemanagementservice.models.RideStatus;
 import lombok.Data;
 
 import java.util.List;
@@ -13,5 +14,6 @@ public class GetRideResponseDto
     Double destinationLatitude;
     Double destinationLongitude;
     Integer amount;
+    RideStatus rideStatus;
 
 }
