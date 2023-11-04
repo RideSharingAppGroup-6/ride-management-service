@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.Random;
 
 @Service
-public class RideManagementService
+public class RideManagementService implements RideService
 {
     private RideRepo rideRepo;
 
