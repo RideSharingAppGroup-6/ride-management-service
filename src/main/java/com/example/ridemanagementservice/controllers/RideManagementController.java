@@ -5,6 +5,8 @@ import com.example.ridemanagementservice.dtos.*;
 import com.example.ridemanagementservice.services.RideManagementService;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,35 +24,54 @@ public class RideManagementController
     }
 
     @PostMapping("{userId}")
-    public CreateRideResponseDto createRide(@RequestBody CreateRideRequestDto createRideRequestDto,
-                                            @PathVariable("userId") Long userId)
+    public ResponseEntity<CreateRideResponseDto> createRide(@RequestBody CreateRideRequestDto createRideRequestDto,
+                                                           @PathVariable("userId") Long userId)
     {
-        return this.rideManagementService.createRide(createRideRequestDto.getSourceLatitiude(),
+
+        CreateRideResponseDto response =  this.rideManagementService.createRide(createRideRequestDto.getSourceLatitiude(),
                 createRideRequestDto.getSourceLongitude(), createRideRequestDto.getDestinationLatitude(),
                 createRideRequestDto.getDestinationLongitude(),
                 userId);
+
+        if( response==null )
+            return new ResponseEntity<>(
+                    null,
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+
+        return new ResponseEntity<>(
+                response,
+                HttpStatus.CREATED
+        );
 
 
     }
 
     @GetMapping("{userId}")
-    public List<GetRideResponseDto> getAllRides(@PathVariable("userId") Long userId)
+    public ResponseEntity<List<GetRideResponseDto>> getAllRides(@PathVariable("userId") Long userId)
     {
-        return rideManagementService.getAllRides(userId);
+        List<GetRideResponseDto> allRides = rideManagementService.getAllRides(userId);
+        return new ResponseEntity<>(allRides,HttpStatus.OK);
     }
 
     @GetMapping
-    public List<AllRideDetailsResponseDto> getAllRides(@RequestBody ListOfRideIdRequestDto listOfRideIdRequestDto)
+    public ResponseEntity<List<AllRideDetailsResponseDto>> getAllRides(@RequestBody ListOfRideIdRequestDto listOfRideIdRequestDto)
     {
-            return rideManagementService.getAllRides(listOfRideIdRequestDto.getRideId());
+           List<AllRideDetailsResponseDto> response = rideManagementService.getAllRides(listOfRideIdRequestDto.getRideId());
+           return new ResponseEntity<>(
+                   response,
+                   HttpStatus.OK
+           );
     }
 
 
     @PutMapping("{rideId}" )
-    public UpdateRideStatusResponseDto updateRideStatus(@RequestBody UpdateRideStatusRequestDto updateRideStatusRequestDto,
+    public ResponseEntity<UpdateRideStatusResponseDto> updateRideStatus(@RequestBody UpdateRideStatusRequestDto updateRideStatusRequestDto,
                                                         @PathVariable("rideId") Long rideId)
     {
-        return rideManagementService.updateRideStatus(updateRideStatusRequestDto.getRideStatus(),rideId);
+        return new ResponseEntity<>(
+                rideManagementService.updateRideStatus(updateRideStatusRequestDto.getRideStatus(),rideId),
+                HttpStatus.OK);
     }
 
 

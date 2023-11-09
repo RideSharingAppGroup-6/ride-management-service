@@ -7,6 +7,5 @@ import org.springframework.http.HttpStatus;
 @Data
 public class CreateRideResponseDto
 {
-    private HttpStatus httpStatus;
     private Long rideId;
 }

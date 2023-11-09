@@ -53,7 +53,6 @@ public class RideManagementService implements RideService
     {
         CreateRideResponseDto createRideResponseDto = new CreateRideResponseDto();
         createRideResponseDto.setRideId(ride.getId());
-        createRideResponseDto.setHttpStatus(HttpStatus.CREATED);
         return createRideResponseDto;
     }
     public CreateRideResponseDto createRide(Double sourceLatitude,
@@ -85,6 +84,8 @@ public class RideManagementService implements RideService
     public List<GetRideResponseDto> getAllRides(Long userId)
     {
         List<Ride> allRides = rideRepo.findAllByUserId(userId);
+        if( allRides.size()==0 )
+            throw new NotFoundException("No rides found for the current user");
         List<GetRideResponseDto> listOfRides = new ArrayList<>();
         for(Ride ride:allRides)
         {
